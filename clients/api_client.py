@@ -1,14 +1,14 @@
 from typing import Any
 
-from httpx import Client, URL, Response, QueryParams
-from httpx._types import RequestData, RequestFiles
+from httpx import Client, URL, Response
+from httpx._types import QueryParamTypes, RequestData, RequestFiles
 
 
 class APIClient:
     def __init__(self, client: Client):
         self.client = client
 
-    def get(self, url: URL | str, params: QueryParams | None = None) -> Response:
+    def get(self, url: URL | str, params: QueryParamTypes | None = None) -> Response:
         """
         Выполняет GET-запрос.
 
