@@ -1,7 +1,6 @@
 import uuid
-
 from pydantic import BaseModel, Field, EmailStr, HttpUrl, ValidationError
-
+from tools.fakers import fake
 
 # Добавили модель FileSchema
 class FileSchema(BaseModel):
@@ -14,10 +13,10 @@ class FileSchema(BaseModel):
 # Добавили модель UserSchema
 class UserSchema(BaseModel):
     id: str
-    email: EmailStr  # Используем EmailStr вместо str
-    last_name: str = Field(alias="lastName")
-    first_name: str = Field(alias="firstName")
-    middle_name: str = Field(alias="middleName")
+    email: EmailStr = Field(default_factory=fake.email)
+    last_name: str = Field(alias="lastName", default_factory=fake.last_name)
+    first_name: str = Field(alias="firstName", default_factory=fake.first_name)
+    middle_name: str = Field(alias="middleName", default_factory=fake.middle_name)
 
     def get_username(self) -> str:
         return f"{self.first_name} {self.last_name}"

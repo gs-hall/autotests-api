@@ -6,7 +6,7 @@ import sys
 
 import httpx
 
-from tools.fakers import get_random_email
+from tools.fakers import fake
 
 
 BASE_URL = "http://localhost:8000"
@@ -20,7 +20,7 @@ def print_response(label: str, response: httpx.Response) -> None:
 
 def create_user(client: httpx.Client) -> dict:
     payload = {
-        "email": get_random_email(),
+        "email": fake.email(),
         "password": PASSWORD,
         "lastName": "string",
         "firstName": "string",
@@ -56,7 +56,7 @@ def login(client: httpx.Client, email: str, password: str) -> str:
 
 def update_user(client: httpx.Client, user_id: str, access_token: str) -> httpx.Response:
     payload = {
-        "email": get_random_email(),
+        "email": fake.email(),
         "lastName": "string",
         "firstName": "string",
         "middleName": "string",
