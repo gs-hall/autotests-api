@@ -10,9 +10,9 @@ class UserSchema(BaseModel):
 
     id: str
     email: EmailStr
-    last_name: str = Field(alias="lastName")
-    first_name: str = Field(alias="firstName")
-    middle_name: str = Field(alias="middleName")
+    last_name: str = Field(validation_alias="lastName", serialization_alias="lastName")
+    first_name: str = Field(validation_alias="firstName", serialization_alias="firstName")
+    middle_name: str = Field(validation_alias="middleName", serialization_alias="middleName")
 
 
 class CreateUserRequestSchema(BaseModel):
@@ -22,9 +22,9 @@ class CreateUserRequestSchema(BaseModel):
 
     email: EmailStr
     password: str
-    last_name: str = Field(alias="lastName")
-    first_name: str = Field(alias="firstName")
-    middle_name: str = Field(alias="middleName")
+    last_name: str = Field(validation_alias="lastName", serialization_alias="lastName")
+    first_name: str = Field(validation_alias="firstName", serialization_alias="firstName")
+    middle_name: str = Field(validation_alias="middleName", serialization_alias="middleName")
 
 
 class CreateUserResponseSchema(BaseModel):
