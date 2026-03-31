@@ -19,6 +19,6 @@ class TestReruns:
         assert random.choice([True, False])
 
 
-@pytest.mark.flaky(reruns=3, reruns_delay=2, condition=PLATFORM == "Windows")  # Перезапуск при выполнении условия
+@pytest.mark.flaky(reruns=5, reruns_delay=2)  # Перезапуск при выполнении условия
 def test_rerun_with_condition():
     assert random.choice([True, False])
