@@ -1,3 +1,23 @@
+def assert_get_exercises_response(response, expected_exercises):
+    """
+    Проверяет, что список заданий в ответе содержит все ожидаемые задания и корректно валидирует каждое задание.
+    :param response: GetExercisesResponseSchema
+    :param expected_exercises: Список ExerciseSchema, которые должны быть в ответе
+    :raises AssertionError: Если хотя бы одно задание не найдено или не совпадает
+    """
+    actual_exercises = response.exercises
+    assert len(actual_exercises) >= len(expected_exercises), (
+        f"В ответе меньше заданий, чем ожидалось: {len(actual_exercises)} < {len(expected_exercises)}"
+    )
+    # Для каждого ожидаемого задания ищем совпадение по id и сравниваем все поля
+    for expected in expected_exercises:
+        found = False
+        for actual in actual_exercises:
+            if actual.id == expected.id:
+                assert_exercise(actual, expected)
+                found = True
+                break
+        assert found, f"Задание с id={expected.id} не найдено в ответе"
 from clients.exercises.exercises_schema import CreateExerciseRequestSchema, CreateExerciseResponseSchema, GetExerciseResponseSchema
 from tools.assertions.base import assert_equal
 from clients.errors_schema import InternalErrorResponseSchema

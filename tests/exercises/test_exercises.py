@@ -5,10 +5,27 @@ from clients.exercises.exercises_schema import CreateExerciseRequestSchema, Crea
 from tools.assertions.base import assert_status_code
 from tools.assertions.schema import validate_json_schema
 from tools.assertions.exercises import assert_create_exercise_response, assert_get_exercise_response, assert_update_exercise_response
-
+from clients.exercises.exercises_schema import GetExercisesQuerySchema, GetExercisesResponseSchema
+from tools.assertions.exercises import assert_get_exercises_response
 @pytest.mark.exercises
 @pytest.mark.regression
 class TestExercises:
+    def test_get_exercises(self, exercises_client, function_course, function_exercise):
+        """
+        Проверяет получение списка заданий через GET /api/v1/exercises с фильтрацией по course_id.
+        """
+
+        # Формируем query с course_id
+        query = GetExercisesQuerySchema(course_id=function_course.response.course.id)
+        response = exercises_client.get_exercises_api(query)
+        response_data = GetExercisesResponseSchema.model_validate_json(response.text)
+
+        assert_status_code(response.status_code, HTTPStatus.OK)
+        # Проверяем, что список содержит созданное задание
+        assert_get_exercises_response(response_data, [function_exercise.response.exercise])
+        validate_json_schema(response.json(), response_data.model_json_schema())
+
+
     """
     Тесты для проверки создания задания через API.
     """
