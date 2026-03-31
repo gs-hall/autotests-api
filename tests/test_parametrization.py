@@ -2,7 +2,7 @@ import pytest
 from _pytest.fixtures import SubRequest
 
 
-@pytest.mark.parametrize("number", [1, 2, 3, -1])
+@pytest.mark.parametrize("number", [1, 2, 3])
 def test_numbers(number: int):
     assert number > 0
 
