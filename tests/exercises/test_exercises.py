@@ -1,10 +1,10 @@
 import pytest
 from http import HTTPStatus
 from clients.exercises.exercises_client import ExercisesClient
-from clients.exercises.exercises_schema import CreateExerciseRequestSchema, CreateExerciseResponseSchema, GetExerciseResponseSchema
+from clients.exercises.exercises_schema import CreateExerciseRequestSchema, CreateExerciseResponseSchema, GetExerciseResponseSchema, UpdateExerciseRequestSchema, UpdateExerciseResponseSchema
 from tools.assertions.base import assert_status_code
 from tools.assertions.schema import validate_json_schema
-from tools.assertions.exercises import assert_create_exercise_response, assert_get_exercise_response
+from tools.assertions.exercises import assert_create_exercise_response, assert_get_exercise_response, assert_update_exercise_response
 
 @pytest.mark.exercises
 @pytest.mark.regression
@@ -34,4 +34,22 @@ class TestExercises:
 
         assert_status_code(response.status_code, HTTPStatus.OK)
         assert_get_exercise_response(response_data, function_exercise.response)
+        validate_json_schema(response.json(), response_data.model_json_schema())
+
+    def test_update_exercise(self, exercises_client, function_exercise):
+        """
+        Проверяет обновление задания через PATCH /api/v1/exercises/{exercise_id}.
+        """
+        from clients.exercises.exercises_schema import UpdateExerciseRequestSchema, UpdateExerciseResponseSchema
+        from tools.assertions.exercises import assert_update_exercise_response
+        from tools.assertions.base import assert_status_code
+        from tools.assertions.schema import validate_json_schema
+        exercise_id = function_exercise.response.exercise.id
+        # Сгенерируем новый запрос на обновление (можно использовать фабрику или явно)
+        update_request = UpdateExerciseRequestSchema(course_id=function_exercise.response.exercise.course_id)
+        response = exercises_client.update_exercise_api(exercise_id, update_request)
+        response_data = UpdateExerciseResponseSchema.model_validate_json(response.text)
+
+        assert_status_code(response.status_code, HTTPStatus.OK)
+        assert_update_exercise_response(update_request, response_data)
         validate_json_schema(response.json(), response_data.model_json_schema())
