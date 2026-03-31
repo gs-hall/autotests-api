@@ -53,3 +53,21 @@ class TestExercises:
         assert_status_code(response.status_code, HTTPStatus.OK)
         assert_update_exercise_response(update_request, response_data)
         validate_json_schema(response.json(), response_data.model_json_schema())
+
+    def test_delete_exercise(self, exercises_client, function_exercise):
+        """
+        Проверяет удаление задания через DELETE /api/v1/exercises/{exercise_id} и отсутствие задания после удаления.
+        """
+        exercise_id = function_exercise.response.exercise.id
+        # Удаляем задание
+        delete_response = exercises_client.delete_exercise_api(exercise_id)
+        assert_status_code(delete_response.status_code, HTTPStatus.OK)
+
+        # Пробуем получить удалённое задание
+        get_response = exercises_client.get_exercise_api(exercise_id)
+        from clients.errors_schema import InternalErrorResponseSchema
+        from tools.assertions.exercises import assert_exercise_not_found_response
+        error_data = InternalErrorResponseSchema.model_validate_json(get_response.text)
+        assert_status_code(get_response.status_code, HTTPStatus.NOT_FOUND)
+        assert_exercise_not_found_response(error_data)
+        validate_json_schema(get_response.json(), error_data.model_json_schema())
