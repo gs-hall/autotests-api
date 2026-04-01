@@ -1,5 +1,8 @@
-import pytest
 from http import HTTPStatus
+
+import allure
+from allure_commons.types import Severity
+import pytest
 
 from clients.errors_schema import InternalErrorResponseSchema
 from clients.exercises.exercises_client import ExercisesClient
@@ -12,6 +15,10 @@ from clients.exercises.exercises_schema import (
     UpdateExerciseRequestSchema,
     UpdateExerciseResponseSchema,
 )
+from tools.allure.epics import AllureEpic
+from tools.allure.features import AllureFeature
+from tools.allure.stories import AllureStory
+from tools.allure.tags import AllureTag
 from tools.assertions.base import assert_status_code
 from tools.assertions.exercises import (
     assert_create_exercise_response,
@@ -25,7 +32,17 @@ from tools.assertions.schema import validate_json_schema
 
 @pytest.mark.exercises
 @pytest.mark.regression
+@allure.tag(AllureTag.EXERCISES, AllureTag.REGRESSION)
+@allure.epic(AllureEpic.LMS)  # Добавили epic
+@allure.feature(AllureFeature.EXERCISES)
+@allure.parent_suite(AllureEpic.LMS)
+@allure.suite(AllureFeature.EXERCISES)
 class TestExercises:
+    @allure.title("Get exercises")
+    @allure.tag(AllureTag.GET_ENTITIES)
+    @allure.story(AllureStory.GET_ENTITIES)
+    @allure.sub_suite(AllureStory.GET_ENTITIES)
+    @allure.severity(Severity.BLOCKER)
     def test_get_exercises(self, exercises_client, function_course, function_exercise):
         """
         Проверяет получение списка заданий через GET /api/v1/exercises с фильтрацией по course_id.
@@ -45,6 +62,11 @@ class TestExercises:
     """
     Тесты для проверки создания задания через API.
     """
+    @allure.title("Create exercise")
+    @allure.tag(AllureTag.CREATE_ENTITY)
+    @allure.story(AllureStory.CREATE_ENTITY)
+    @allure.sub_suite(AllureStory.CREATE_ENTITY)
+    @allure.severity(Severity.CRITICAL)
     def test_create_exercise(self, exercises_client: ExercisesClient, function_course):
         """
         Проверяет создание задания через POST /api/v1/exercises.
@@ -57,6 +79,11 @@ class TestExercises:
         assert_create_exercise_response(request, response_data)
         validate_json_schema(response.json(), response_data.model_json_schema())
 
+    @allure.tag(AllureTag.GET_ENTITY)
+    @allure.story(AllureStory.GET_ENTITY)
+    @allure.sub_suite(AllureStory.GET_ENTITY)
+    @allure.severity(Severity.CRITICAL)
+    @allure.title("Get exercise")
     def test_get_exercise(self, exercises_client, function_exercise):
         """
         Проверяет получение задания через GET /api/v1/exercises/{exercise_id}.
@@ -69,6 +96,11 @@ class TestExercises:
         assert_get_exercise_response(response_data, function_exercise.response)
         validate_json_schema(response.json(), response_data.model_json_schema())
 
+    @allure.tag(AllureTag.UPDATE_ENTITY)
+    @allure.story(AllureStory.UPDATE_ENTITY)
+    @allure.sub_suite(AllureStory.UPDATE_ENTITY)
+    @allure.severity(Severity.CRITICAL)
+    @allure.title("Update exercise")
     def test_update_exercise(self, exercises_client, function_exercise):
         """
         Проверяет обновление задания через PATCH /api/v1/exercises/{exercise_id}.
@@ -83,6 +115,11 @@ class TestExercises:
         assert_update_exercise_response(update_request, response_data)
         validate_json_schema(response.json(), response_data.model_json_schema())
 
+    @allure.title("Delete exercise")
+    @allure.tag(AllureTag.DELETE_ENTITY)
+    @allure.story(AllureStory.DELETE_ENTITY)
+    @allure.sub_suite(AllureStory.DELETE_ENTITY)
+    @allure.severity(Severity.NORMAL)
     def test_delete_exercise(self, exercises_client, function_exercise):
         """
         Проверяет удаление задания через DELETE /api/v1/exercises/{exercise_id} и отсутствие задания после удаления.
