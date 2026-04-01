@@ -3,7 +3,11 @@ from httpx import Response
 
 from clients.api_client import APIClient
 from clients.files.files_schema import CreateFileRequestSchema, CreateFileResponseSchema
-from clients.private_http_builder import AuthenticationUserSchema, get_private_http_client
+from clients.private_http_builder import (
+    AuthenticationUserSchema,
+    get_private_http_client,
+)
+from tools.routes import APIRoutes
 
 
 class FilesClient(APIClient):
@@ -19,7 +23,7 @@ class FilesClient(APIClient):
         :param file_id: Идентификатор файла.
         :return: Ответ от сервера в виде объекта httpx.Response
         """
-        return self.get(f"/api/v1/files/{file_id}")
+        return self.get(f"{APIRoutes.FILES}/{file_id}")
 
     @allure.step("Create file")
     def create_file_api(self, request: CreateFileRequestSchema) -> Response:
@@ -30,9 +34,9 @@ class FilesClient(APIClient):
         :return: Ответ от сервера в виде объекта httpx.Response
         """
         return self.post(
-            "/api/v1/files",
-            data=request.model_dump(by_alias=True, exclude={'upload_file'}),
-            files={"upload_file": request.upload_file.read_bytes()}
+            APIRoutes.FILES,
+            data=request.model_dump(by_alias=True, exclude={"upload_file"}),
+            files={"upload_file": request.upload_file.read_bytes()},
         )
 
     @allure.step("Delete file by id {file_id}")
@@ -43,7 +47,7 @@ class FilesClient(APIClient):
         :param file_id: Идентификатор файла.
         :return: Ответ от сервера в виде объекта httpx.Response
         """
-        return self.delete(f"/api/v1/files/{file_id}")
+        return self.delete(f"{APIRoutes.FILES}/{file_id}")
 
     @allure.step("Create file")
     def create_file(self, request: CreateFileRequestSchema) -> CreateFileResponseSchema:
