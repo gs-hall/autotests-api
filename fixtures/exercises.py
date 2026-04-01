@@ -1,25 +1,30 @@
 import pytest
+from pydantic import BaseModel
+
 from clients.exercises.exercises_client import ExercisesClient, get_exercises_client
 from clients.exercises.exercises_schema import CreateExerciseRequestSchema, CreateExerciseResponseSchema
-from typing import Any
+from fixtures.courses import CourseFixture
+from fixtures.users import UserFixture
 
-class ExerciseFixture:
-    """
-    Агрегатор данных о созданном задании для тестов.
-    """
-    def __init__(self, request: CreateExerciseRequestSchema, response: CreateExerciseResponseSchema):
-        self.request = request
-        self.response = response
 
-@pytest.fixture(scope="function")
-def exercises_client(function_user) -> ExercisesClient:
+class ExerciseFixture(BaseModel):
+    request: CreateExerciseRequestSchema
+    response: CreateExerciseResponseSchema
+
+
+@pytest.fixture
+def exercises_client(function_user: UserFixture) -> ExercisesClient:
     """
     Возвращает экземпляр ExercisesClient для работы с API заданий.
     """
     return get_exercises_client(function_user.authentication_user)
 
-@pytest.fixture(scope="function")
-def function_exercise(function_course, exercises_client: ExercisesClient) -> ExerciseFixture:
+
+@pytest.fixture
+def function_exercise(
+    exercises_client: ExercisesClient,
+    function_course: CourseFixture,
+) -> ExerciseFixture:
     """
     Создаёт тестовое задание и возвращает агрегатор ExerciseFixture.
     """

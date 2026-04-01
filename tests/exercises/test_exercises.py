@@ -1,12 +1,28 @@
 import pytest
 from http import HTTPStatus
+
+from clients.errors_schema import InternalErrorResponseSchema
 from clients.exercises.exercises_client import ExercisesClient
-from clients.exercises.exercises_schema import CreateExerciseRequestSchema, CreateExerciseResponseSchema, GetExerciseResponseSchema, UpdateExerciseRequestSchema, UpdateExerciseResponseSchema
+from clients.exercises.exercises_schema import (
+    CreateExerciseRequestSchema,
+    CreateExerciseResponseSchema,
+    GetExerciseResponseSchema,
+    GetExercisesQuerySchema,
+    GetExercisesResponseSchema,
+    UpdateExerciseRequestSchema,
+    UpdateExerciseResponseSchema,
+)
 from tools.assertions.base import assert_status_code
+from tools.assertions.exercises import (
+    assert_create_exercise_response,
+    assert_exercise_not_found_response,
+    assert_get_exercise_response,
+    assert_get_exercises_response,
+    assert_update_exercise_response,
+)
 from tools.assertions.schema import validate_json_schema
-from tools.assertions.exercises import assert_create_exercise_response, assert_get_exercise_response, assert_update_exercise_response
-from clients.exercises.exercises_schema import GetExercisesQuerySchema, GetExercisesResponseSchema
-from tools.assertions.exercises import assert_get_exercises_response
+
+
 @pytest.mark.exercises
 @pytest.mark.regression
 class TestExercises:
@@ -22,7 +38,7 @@ class TestExercises:
 
         assert_status_code(response.status_code, HTTPStatus.OK)
         # Проверяем, что список содержит созданное задание
-        assert_get_exercises_response(response_data, [function_exercise.response.exercise])
+        assert_get_exercises_response(response_data, [function_exercise.response])
         validate_json_schema(response.json(), response_data.model_json_schema())
 
 
@@ -57,10 +73,6 @@ class TestExercises:
         """
         Проверяет обновление задания через PATCH /api/v1/exercises/{exercise_id}.
         """
-        from clients.exercises.exercises_schema import UpdateExerciseRequestSchema, UpdateExerciseResponseSchema
-        from tools.assertions.exercises import assert_update_exercise_response
-        from tools.assertions.base import assert_status_code
-        from tools.assertions.schema import validate_json_schema
         exercise_id = function_exercise.response.exercise.id
         # Сгенерируем новый запрос на обновление (можно использовать фабрику или явно)
         update_request = UpdateExerciseRequestSchema(course_id=function_exercise.response.exercise.course_id)
@@ -82,8 +94,6 @@ class TestExercises:
 
         # Пробуем получить удалённое задание
         get_response = exercises_client.get_exercise_api(exercise_id)
-        from clients.errors_schema import InternalErrorResponseSchema
-        from tools.assertions.exercises import assert_exercise_not_found_response
         error_data = InternalErrorResponseSchema.model_validate_json(get_response.text)
         assert_status_code(get_response.status_code, HTTPStatus.NOT_FOUND)
         assert_exercise_not_found_response(error_data)
