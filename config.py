@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Self
 
-from pydantic import BaseModel, FilePath, HttpUrl
+from pydantic import BaseModel, DirectoryPath, FilePath, HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -26,11 +27,21 @@ class Settings(BaseSettings):
 
     test_data: TestDataConfig
     http_client: HTTPClientConfig
+    allure_results_dir: DirectoryPath
 
     if TYPE_CHECKING:
-        # Only for static analyzers (Pylance/Pyright), runtime is unchanged.
+
         def __init__(self, **kwargs: Any) -> None: ...
+
+    # Добавили метод initialize
+    @classmethod
+    def initialize(cls) -> Self:  # Возвращает экземпляр класса Settings
+        allure_results_dir = Path("./allure-results")
+        allure_results_dir.mkdir(exist_ok=True)
+
+        # Передаем allure_results_dir в инициализацию настроек
+        return cls(allure_results_dir=allure_results_dir)
 
 
 # Инициализируем настройки
-settings = Settings()
+settings = Settings.initialize()
