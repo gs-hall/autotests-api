@@ -1,11 +1,14 @@
 from http import HTTPStatus
 
 import allure
-from allure_commons.types import Severity
 import pytest
+from allure_commons.types import Severity
 
 from clients.authentication.authentication_client import AuthenticationClient
-from clients.authentication.authentication_schema import LoginRequestSchema, LoginResponseSchema
+from clients.authentication.authentication_schema import (
+    LoginRequestSchema,
+    LoginResponseSchema,
+)
 from fixtures.users import UserFixture
 from tools.allure.epics import AllureEpic
 from tools.allure.features import AllureFeature
@@ -28,8 +31,12 @@ class TestAuthentication:
     @allure.severity(Severity.BLOCKER)
     @allure.story(AllureStory.LOGIN)
     @allure.sub_suite(AllureStory.LOGIN)
-    def test_login(self, function_user: UserFixture, authentication_client: AuthenticationClient):
-        request = LoginRequestSchema(email=function_user.email, password=function_user.password)
+    def test_login(
+        self, function_user: UserFixture, authentication_client: AuthenticationClient
+    ):
+        request = LoginRequestSchema(
+            email=function_user.email, password=function_user.password
+        )
         response = authentication_client.login_api(request)
         response_data = LoginResponseSchema.model_validate_json(response.text)
 
