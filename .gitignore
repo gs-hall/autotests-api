@@ -2,8 +2,9 @@
 allure-results/
 test-results/
 allure-report/
-.github/
-
+.github/instructions
+.github/skills
+.github/copilot-instructions.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
