@@ -13,5 +13,8 @@
   },
   "python.languageServer": "Pylance",
   "python.analysis.typeCheckingMode": "standard",
-  "python.analysis.autoImportCompletions": true
+  "python.analysis.autoImportCompletions": true,
+  "chat.tools.terminal.autoApprove": {
+    "/Users/e.ivantsov/code/python/autotests-api/.venv/bin/python": true
+  }
 }
