@@ -1,6 +1,21 @@
 # autotests-api
 
 Link is <https://github.com/gs-hall/autotests-api>
+python -m pytest -m "regression"
+python -m pytest --alluredir=./allure-results
+python -m pytest -m "regression" --alluredir=./allure-results
+
+# static
+
+allure generate ./allure-results --output=./allure-report
+
+# dynamic
+
+allure serve ./allure-results
+
+# coverage
+
+swagger-coverage-tool save-report
 
 ## Quick Checklist
 

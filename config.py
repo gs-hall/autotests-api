@@ -18,6 +18,14 @@ class TestDataConfig(BaseModel):
     image_png_file: FilePath
 
 
+class SwaggerCoverageService(BaseModel):
+    key: str
+    name: str
+    tags: list[str]
+    repository: str
+    swagger_url: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -27,6 +35,7 @@ class Settings(BaseSettings):
 
     test_data: TestDataConfig
     http_client: HTTPClientConfig
+    swagger_coverage_services: list[SwaggerCoverageService]
     allure_results_dir: DirectoryPath
 
     if TYPE_CHECKING:
