@@ -1,19 +1,104 @@
 # autotests-api
 
+# API Course Automation Tests
+
+This project implements automated tests for
+the [API Course Test Server](https://github.com/Nikita-Filonov/qa-automation-engineer-api-course). The
+tests are written using **Python**, **Pytest**, **Allure**, **Pydantic**, **Faker** and **HTTPX**. The test
+application’s source code is available on [GitHub](https://github.com/Nikita-Filonov/qa-automation-engineer-api-course).
+
+## Project Overview
+
+The goal of this project is to automate the testing of the API Course server, focusing on REST API testing. The
+automated tests verify various functionalities of the application to ensure its stability and correctness.
+
+This project is specifically designed for API autotests, incorporating best practices such as:
+
+- API Clients for structured interaction with endpoints,
+- Pytest fixtures for reusable and maintainable test setups,
+- Pydantic models for strict data validation,
+- Schema validation to ensure API contract correctness,
+- Fake data generation to simulate real-world scenarios,
+- And more advanced techniques to improve test efficiency and reliability.
+- The project structure follows industry standards to ensure clarity, maintainability, and scalability of the test code.
+
+## Getting Started
+
+### Clone the Repository
+
+To get started, clone the project repository using Git:
+
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+```
+
+### Create a Virtual Environment
+
+It's recommended to use a virtual environment to manage project dependencies. Follow the instructions for your operating
+system:
+
+#### Linux / MacOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### Install Dependencies
+
+Once the virtual environment is activated, install the project dependencies listed in `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Running the Tests with Allure Report Generation
+
+To run the tests and generate an Allure report, use the following command:
+
+```bash
+pytest -m "regression" --alluredir=./allure-results
+```
+
+This will execute all tests in the project and display the results in the terminal.
+
+### Viewing the Allure Report
+
+After the tests have been executed, you can generate and view the Allure report with:
+
+```bash
+allure serve allure-results
+```
+
+This command will open the Allure report in your default web browser.
+
+## Repository
+
 Link is <https://github.com/gs-hall/autotests-api>
+
+## Test run commands
+
 python -m pytest -m "regression"
 python -m pytest --alluredir=./allure-results
 python -m pytest -m "regression" --alluredir=./allure-results
 
-# static
+## Allure report generation
 
 allure generate ./allure-results --output=./allure-report
 
-# dynamic
+## Serve Allure report
 
 allure serve ./allure-results
 
-# coverage
+## Swagger coverage report
 
 swagger-coverage-tool save-report
 
@@ -131,11 +216,6 @@ For each new entity, add the following components.
 - Main test flow must use typed clients + fixtures + assertions.
 - If demo scripts upload files, they must also use config-driven paths.
 
-## Test run commands
-
-- Full regression: `python -m pytest -m "regression"`
-- With Allure results: `python -m pytest -m "regression" --alluredir=./allure-results`
-
 ## Definition of done for new test functionality
 
 - Schemas are typed and aligned with API contract.
@@ -145,104 +225,6 @@ For each new entity, add the following components.
 - Tests include status code, payload assertions, and JSON schema validation.
 - Allure annotations (`epic/feature/story/suite/sub_suite/parent_suite`) are complete.
 - Regression suite passes.
-
-## RU: Основные правила API автотестов на pytest
-
-Этот проект использует единый подход для всех сущностей API (users, files, courses, exercises, authentication).
-
-### Слои проекта
-
-- `clients`: HTTP-клиенты и Pydantic-схемы запросов/ответов.
-- `fixtures`: pytest-фикстуры для подготовки данных и клиентов.
-- `tests`: тестовые сценарии (позитивные и негативные), сгруппированные по сущностям.
-- `tools/assertions`: переиспользуемые проверки ответов API.
-- `tools/allure`: утилиты для окружения Allure.
-- `tools/fakers`: генерация тестовых данных.
-- `tools/logger`: единая инициализация логгера.
-
-### Что нужно создать для новой сущности
-
-#### 1. Pydantic-схемы
-
-- Создать схемы в `clients/<entity>/<entity>_schema.py`.
-- Использовать строгую типизацию (`UUID`, `HttpUrl`, `FilePath`, `DirectoryPath` и т.д.).
-- При необходимости задавать alias-поля в соответствии с API-контрактом.
-
-#### 2. Методы API-клиента
-
-- Добавить методы в `clients/<entity>/<entity>_client.py`.
-- Использовать `APIRoutes`, а не строковые хардкоды эндпоинтов.
-- Разделять методы:
-- `*_api` возвращают `httpx.Response`.
-- typed-методы возвращают Pydantic-модель через `model_validate_json`.
-- Добавлять `@allure.step(...)` для каждого пользовательского действия в клиенте.
-
-#### 3. Фикстуры
-
-- Добавить фикстуры в `fixtures/<entity>.py`.
-- Использовать `BaseModel`-агрегаторы (`request` + `response`).
-- Не указывать `scope="function"`, если нужен scope по умолчанию.
-- Добавлять аннотации типов у входных фикстур.
-- Для тестовых файлов использовать пути из `settings`, без хардкода.
-
-#### 4. Проверки (assertions)
-
-- Добавить проверки в `tools/assertions/<entity>.py`.
-- Проверять все значимые поля ответа явно.
-- Переиспользовать общие проверки: `assert_equal`, `assert_status_code`, `assert_length`.
-- Добавлять `@allure.step(...)` к каждой assertion-функции.
-- Инициализировать модульный логгер через `get_logger("<ENTITY>_ASSERTIONS")`.
-- В каждой проверке писать `logger.info(...)` с понятным действием.
-
-#### 5. Тесты
-
-- Добавить тесты в `tests/<entity>/test_<entity>.py`.
-- Покрыть CRUD и негативные кейсы (валидация, not found и т.д.).
-- Парсить ответ в Pydantic-модель перед проверками.
-- Делать валидацию JSON schema через `validate_json_schema`.
-- Держать импорты только в начале файла.
-
-### Правила Allure
-
-#### На уровне класса
-
-- `@allure.epic(...)`
-- `@allure.feature(...)`
-- `@allure.parent_suite(...)` должно совпадать с `epic`.
-- `@allure.suite(...)` должно совпадать с `feature`.
-
-#### На уровне теста
-
-- `@allure.title(...)`
-- `@allure.tag(...)`
-- `@allure.story(...)`
-- `@allure.sub_suite(...)` должно совпадать с `story`.
-- `@allure.severity(...)`
-
-#### На уровне шагов
-
-- Методы клиентов и assertion-функции оформляются через `@allure.step(...)`.
-
-### Логирование
-
-- Использовать `get_logger` один раз на модуль.
-- Логировать ключевые этапы проверок через `logger.info(...)`.
-
-### Faker и тестовые данные
-
-- Использовать `tools.fakers` для генерации валидных значений по умолчанию.
-- Специальные значения задавать только для конкретного тестового сценария.
-
-### Конфигурация
-
-- Настройки хранить в `config.py` на базе `pydantic-settings`.
-- Данные окружения читать из `.env`.
-- Путь к файлам брать из `settings.test_data.*`, а не из строковых путей.
-
-### Команды запуска
-
-- Регресс: `python -m pytest -m "regression"`
-- Регресс + Allure: `python -m pytest -m "regression" --alluredir=./allure-results`
 
 ## AI Guide: How to create new tests from Swagger/OpenAPI
 

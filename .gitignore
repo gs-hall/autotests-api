@@ -6,6 +6,7 @@ allure-report/
 .github/skills
 .github/copilot-instructions.md
 coverage-results/
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
